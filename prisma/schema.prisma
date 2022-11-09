@@ -8,7 +8,15 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  login    String @unique @db.VarChar(16)
-  password String @db.VarChar(128)
+  id       Int     @id @default(autoincrement())
+  login    String  @unique @db.VarChar(16)
+  password String  @db.VarChar(128)
+  tokens   Token[]
+}
+
+model Token {
+  id     Int    @id @default(autoincrement())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId Int
+  token  String @db.VarChar(256)
 }

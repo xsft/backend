@@ -1,5 +1,6 @@
 const argon2 = require('argon2');
 const { findUnique } = require('../../core/repository/userRepository');
+const { addToken } = require('../repository/tokenRepository');
 const { createToken } = require('../helpers/jwt');
 const BadRequestException = require('../../core/exceptions/BadRequestException');
 require('dotenv').config();
@@ -17,8 +18,9 @@ const loginUser = async (login, password) => {
     throw new BadRequestException('Login and/or password are incorrect');
   }
   if (await argon2.verify(user.password, password)) {
-    const accessToken = createToken({}, accessTokenKey);
-    const refreshToken = createToken({}, refreshTokenKey);
+    const accessToken = createToken({ id: user.id }, accessTokenKey, { expiresIn: '1m' });
+    const refreshToken = createToken({ id: user.id }, refreshTokenKey);
+    await addToken(refreshToken, user.id);
     return { accessToken, refreshToken };
   }
   throw new BadRequestException('Login and/or password are incorrect');

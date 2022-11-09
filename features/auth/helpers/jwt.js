@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
 
-const createToken = (data, salt) => {
+const createToken = (data, salt, options) => {
   try {
-    return jwt.sign({ ...data }, salt, null, null);
+    return jwt.sign({ ...data }, salt, { ...options }, null);
   } catch (e) {
     throw new Error(e);
   }
