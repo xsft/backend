@@ -14,8 +14,10 @@ const login = async (req, res, next) => {
     next(e);
   }
 };
+
 const register = (req, res) => {
 };
+
 const refresh = (req, res) => {
 };
 
