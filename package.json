@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run lint && node index.js",
-    "watch": "nodemon index.js",
-    "lint": "npx eslint ."
+    "start": "node index.js",
+    "watch": "npx nodemon index.js",
+    "lint": "npx eslint . --fix"
   },
   "author": "",
   "license": "ISC",
