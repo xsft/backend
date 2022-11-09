@@ -15,9 +15,11 @@ const login = async (req, res, next) => {
   }
 };
 
+// eslint-disable-next-line no-unused-vars
 const register = (req, res) => {
 };
 
+// eslint-disable-next-line no-unused-vars
 const refresh = (req, res) => {
 };
 
