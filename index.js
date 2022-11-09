@@ -1,7 +1,21 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+const router = require('./features/router');
 
 const app = express();
 const port = 3000;
+
+app.use(bodyParser.json());
+app.use('/api', router);
+app.use((err, req, res, next) => {
+  if (err.statusCode !== undefined) {
+    res.status(err.statusCode).send({
+      error: err.toString(),
+    });
+  } else {
+    next(err);
+  }
+});
 
 function response(methodName) {
   return (req, res) => {
