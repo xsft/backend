@@ -5,7 +5,6 @@ const findUnique = async (data) => {
   try {
     return await prisma.user.findUnique(data);
   } catch (e) {
-    console.error(e);
     throw new DatabaseException('Something went wrong while finding the user');
   }
 };
