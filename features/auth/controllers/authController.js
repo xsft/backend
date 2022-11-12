@@ -1,4 +1,4 @@
-const { loginUser } = require('../service/authService');
+const { loginUser, createUser } = require('../service/authService');
 const BadRequestException = require('../../core/exceptions/BadRequestException');
 
 const login = async (req, res, next) => {
@@ -15,8 +15,23 @@ const login = async (req, res, next) => {
   }
 };
 
-// eslint-disable-next-line no-unused-vars
-const register = (req, res) => {
+const register = async (req, res, next) => {
+  const { loginParam, passwordParam, repeatPasswordParam } = req.body;
+  const errors = [];
+  if (!loginParam) errors.push('Login is empty');
+  if (!passwordParam) errors.push('Password is empty');
+  if (!repeatPasswordParam) errors.push('Repeat password is empty');
+  if (errors.length !== 0) {
+    const reduced = errors.reduce((previousValue, currentValue) => `${previousValue}. ${currentValue}`);
+    next(new BadRequestException(reduced));
+    return;
+  }
+  try {
+    await createUser(loginParam, passwordParam, repeatPasswordParam);
+    res.send();
+  } catch (e) {
+    next(e);
+  }
 };
 
 // eslint-disable-next-line no-unused-vars

@@ -9,6 +9,20 @@ const findUnique = async (data) => {
   }
 };
 
+const addUser = async (login, password) => {
+  try {
+    await prisma.user.create({
+      data: {
+        login,
+        password,
+      },
+    });
+  } catch (e) {
+    throw new DatabaseException('Something went wrong while adding a user');
+  }
+};
+
 module.exports = {
   findUnique,
+  addUser,
 };
