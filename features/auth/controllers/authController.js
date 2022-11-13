@@ -1,4 +1,4 @@
-const { loginUser, createUser } = require('../service/authService');
+const service = require('../service/authService');
 const BadRequestException = require('../../core/exceptions/BadRequestException');
 
 const login = async (req, res, next) => {
@@ -8,7 +8,7 @@ const login = async (req, res, next) => {
     return;
   }
   try {
-    const tokens = await loginUser(loginParam, passwordParam);
+    const tokens = await service.login(loginParam, passwordParam);
     res.send(tokens);
   } catch (e) {
     next(e);
@@ -27,7 +27,7 @@ const register = async (req, res, next) => {
     return;
   }
   try {
-    await createUser(loginParam, passwordParam, repeatPasswordParam);
+    await service.register(loginParam, passwordParam, repeatPasswordParam);
     res.send();
   } catch (e) {
     next(e);
