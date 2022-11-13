@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const createToken = (data, salt, options) => {
+const create = (data, salt, options) => {
   try {
     return jwt.sign({ ...data }, salt, { ...options }, null);
   } catch (e) {
@@ -8,7 +8,7 @@ const createToken = (data, salt, options) => {
   }
 };
 
-const verifyToken = (token, salt) => {
+const verify = (token, salt) => {
   try {
     return jwt.verify(token, salt);
   } catch (e) {
@@ -17,6 +17,6 @@ const verifyToken = (token, salt) => {
 };
 
 module.exports = {
-  createToken,
-  verifyToken,
+  create,
+  verify,
 };

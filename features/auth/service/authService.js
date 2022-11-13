@@ -1,7 +1,7 @@
 const argon2 = require('argon2');
 const userService = require('../../user/service/userService');
-const { addToken, findToken, deleteToken } = require('../repository/tokenRepository');
-const { createToken, verifyToken } = require('../helpers/jwt');
+const repository = require('../repository/tokenRepository');
+const jwt = require('../helpers/jwt');
 const BadRequestException = require('../../core/exceptions/BadRequestException');
 const validateLogin = require('../helpers/validateLogin');
 const validatePassword = require('../helpers/validatePassword');
@@ -16,9 +16,9 @@ const login = async (log, password) => {
     throw new BadRequestException('Login and/or password are incorrect');
   }
   if (await argon2.verify(user.password, password)) {
-    const accessToken = createToken({ id: user.id }, accessTokenKey, { expiresIn: '1m' });
-    const refreshToken = createToken({ id: user.id }, refreshTokenKey);
-    await addToken(refreshToken, user.id);
+    const accessToken = jwt.create({ id: user.id }, accessTokenKey, { expiresIn: '1m' });
+    const refreshToken = jwt.create({ id: user.id }, refreshTokenKey);
+    await repository.add(refreshToken, user.id);
     return { accessToken, refreshToken };
   }
   throw new BadRequestException('Login and/or password are incorrect');
@@ -36,15 +36,15 @@ const register = async (log, password, repeatPassword) => {
 };
 
 const refresh = async (refreshToken) => {
-  const payload = verifyToken(refreshToken, refreshTokenKey);
+  const payload = jwt.verify(refreshToken, refreshTokenKey);
   if (payload) {
     const { id: userId } = payload;
-    const foundToken = await findToken({ userId, token: refreshToken });
+    const foundToken = await repository.find({ userId, token: refreshToken });
     if (!foundToken) throw new BadRequestException('Refresh token is invalid');
-    await deleteToken({ token: refreshToken });
-    const accessToken = createToken({ id: userId }, accessTokenKey, { expiresIn: '1m' });
-    const refreshTokenParam = createToken({ id: userId }, refreshTokenKey);
-    await addToken(refreshTokenParam, userId);
+    await repository.remove({ token: refreshToken });
+    const accessToken = jwt.create({ id: userId }, accessTokenKey, { expiresIn: '1m' });
+    const refreshTokenParam = jwt.create({ id: userId }, refreshTokenKey);
+    await repository.add(refreshTokenParam, userId);
     return { accessToken, refreshToken: refreshTokenParam };
   }
   throw new BadRequestException('Refresh token is invalid');
