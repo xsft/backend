@@ -1,7 +1,7 @@
 const argon2 = require('argon2');
 const userService = require('../../user/service/userService');
-const { addToken } = require('../repository/tokenRepository');
-const { createToken } = require('../helpers/jwt');
+const { addToken, findToken, deleteToken } = require('../repository/tokenRepository');
+const { createToken, verifyToken } = require('../helpers/jwt');
 const BadRequestException = require('../../core/exceptions/BadRequestException');
 const validateLogin = require('../helpers/validateLogin');
 const validatePassword = require('../helpers/validatePassword');
@@ -35,7 +35,23 @@ const register = async (log, password, repeatPassword) => {
   }
 };
 
+const refresh = async (refreshToken) => {
+  const payload = verifyToken(refreshToken, refreshTokenKey);
+  if (payload) {
+    const { id: userId } = payload;
+    const foundToken = await findToken({ userId, token: refreshToken });
+    if (!foundToken) throw new BadRequestException('Refresh token is invalid');
+    await deleteToken({ token: refreshToken });
+    const accessToken = createToken({ id: userId }, accessTokenKey, { expiresIn: '1m' });
+    const refreshTokenParam = createToken({ id: userId }, refreshTokenKey);
+    await addToken(refreshTokenParam, userId);
+    return { accessToken, refreshToken: refreshTokenParam };
+  }
+  throw new BadRequestException('Refresh token is invalid');
+};
+
 module.exports = {
   login,
+  refresh,
   register,
 };

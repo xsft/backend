@@ -10,7 +10,7 @@ const createToken = (data, salt, options) => {
 
 const verifyToken = (token, salt) => {
   try {
-    return jwt.verify(token, salt, null, null);
+    return jwt.verify(token, salt);
   } catch (e) {
     throw new Error(e);
   }

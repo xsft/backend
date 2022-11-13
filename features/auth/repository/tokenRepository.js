@@ -14,6 +14,16 @@ const addToken = async (token, userId) => {
   }
 };
 
+const deleteToken = async (filter) => prisma.token.deleteMany({
+  where: { ...filter },
+});
+
+const findToken = async (filter) => prisma.token.findFirst({
+  where: { ...filter },
+});
+
 module.exports = {
   addToken,
+  deleteToken,
+  findToken,
 };

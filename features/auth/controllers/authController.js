@@ -34,8 +34,18 @@ const register = async (req, res, next) => {
   }
 };
 
-// eslint-disable-next-line no-unused-vars
-const refresh = (req, res) => {
+const refresh = async (req, res, next) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken) {
+    next(new BadRequestException('Refresh token is empty'));
+    return;
+  }
+  try {
+    const tokens = await service.refresh(refreshToken);
+    res.send(tokens);
+  } catch (e) {
+    next(e);
+  }
 };
 
 module.exports = {
