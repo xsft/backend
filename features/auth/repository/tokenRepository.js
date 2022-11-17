@@ -1,7 +1,7 @@
 const { prisma } = require('../../../db/prisma');
 const DatabaseException = require('../../core/exceptions/DatabaseException');
 
-const addToken = async (token, userId) => {
+const add = async (token, userId) => {
   try {
     await prisma.token.create({
       data: {
@@ -14,6 +14,16 @@ const addToken = async (token, userId) => {
   }
 };
 
+const remove = async (filter) => prisma.token.deleteMany({
+  where: { ...filter },
+});
+
+const find = async (filter) => prisma.token.findFirst({
+  where: { ...filter },
+});
+
 module.exports = {
-  addToken,
+  add,
+  remove,
+  find,
 };
